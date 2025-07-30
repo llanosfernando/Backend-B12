@@ -2,12 +2,14 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const conexion = require('./conexion');
+const conexion = require('./config/conexion');
 const login = require('./login');
+const operadorRoutes = require('./routes/operadores');
 
 app.use(cors());  // permite que el frontend se conecte
 app.use(express.json());   // permite recibir JSON
 app.use('/', login); // Aquí montamos la ruta del login
+app.use('/operadores', operadorRoutes); // Aquí montamos la ruta del operador
 
 // Conexión a MySQL
 conexion.connect((error) => {
