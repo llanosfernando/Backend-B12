@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const conexion = require('../conexion');
+const conexion = require('../config/conexion');
 
 router.get('/:codigo', (req, res) => {
   const codigo = req.params.codigo;

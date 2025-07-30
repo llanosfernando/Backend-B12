@@ -3,13 +3,15 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const conexion = require('./config/conexion');
-const login = require('./login');
+const login = require('./routes/login');
 const operadorRoutes = require('./routes/operadores');
+const rutaRegistro = require('./routes/registro');  
 
 app.use(cors());  // permite que el frontend se conecte
 app.use(express.json());   // permite recibir JSON
 app.use('/', login); // Aquí montamos la ruta del login
 app.use('/operadores', operadorRoutes); // Aquí montamos la ruta del operador
+app.use('/registro', rutaRegistro); // Aquí montamos la ruta de registro
 
 // Conexión a MySQL
 conexion.connect((error) => {
@@ -20,9 +22,6 @@ conexion.connect((error) => {
   console.log('Conectado a MySQL correctamente.');
 });
 
-// Importar y usar la ruta de registro
-const rutaRegistro = require('./registro');
-app.use('/', rutaRegistro); // Aquí es donde montamos la ruta
 
 const PORT = process.env.PORT || 3000;
 
