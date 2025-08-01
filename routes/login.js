@@ -1,8 +1,11 @@
-const express = require('express');
-const router = express.Router();
+const express = require('express'); // ✅ Importar express para manejar rutas
+const router = express.Router(); // ✅ Importar express y crear un router
 const db = require('../config/conexion'); // ✅ Conexión correcta
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt'); // ✅ Importar bcrypt para manejar contraseñas
+const jwt = require('jsonwebtoken'); // ✅ Importar JWT para manejar tokens
 
+
+const  JWT_SECRET = process.env.JWT_SECRET|| 'mipalabrasecreta'; // ✅ Clave secreta para JWT, se puede configurar en el entorno
 // ---------------------------------------------
 // RUTA: POST /login
 // Procesa la solicitud de inicio de sesión
@@ -46,10 +49,17 @@ router.post('/login', (req, res) => {
           error: 'Contraseña incorrecta'
         });
       }
+      //console.log('Usuario logueado:', usuarioDB); // ✅ Logueo del usuario para hacer pruebas en consola
+      const token = jwt.sign(
+        { id: usuarioDB.id, email: usuarioDB.email, rol: usuarioDB.rol },
+        JWT_SECRET,
+        { expiresIn: '1h' } // El token expirará en 1 hora
+      );
 
       return res.status(200).json({
         success: true,
-        mensaje: 'Inicio de sesión exitoso'
+        mensaje: 'Inicio de sesión exitoso',
+        token
       });
 
     } catch (err) {
