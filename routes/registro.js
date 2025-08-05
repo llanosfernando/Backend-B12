@@ -1,9 +1,9 @@
-const express = require('express');
+const express = require('express'); 
 const router = express.Router();
 const conexion = require('../config/conexion');
 const bcrypt = require('bcrypt');
 
-router.post('/registro', async (req, res) => {
+router.post('/', async (req, res) => {
   const { nombre, email, password } = req.body;
 
   // Validación de datos

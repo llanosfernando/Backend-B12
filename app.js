@@ -1,11 +1,11 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const app = express();
-const conexion = require('./config/conexion');
-const login = require('./routes/login');
-const operadorRoutes = require('./routes/operadores');
-const rutaRegistro = require('./routes/registro');  
+require('dotenv').config();// Cargar variables de entorno desde .env
+const express = require('express');// Importamos express
+const cors = require('cors');// Permite que el frontend se conecte
+const app = express(); // Inicializamos express
+const conexion = require('./config/conexion');// Configuración de conexión a MySQL
+const login = require('./routes/login');  // Ruta de login
+const operadorRoutes = require('./routes/operadores');// Rutas de operadores
+const rutaRegistro = require('./routes/registro');  // Ruta de registro
 
 app.use(cors());  // permite que el frontend se conecte
 app.use(express.json());   // permite recibir JSON
