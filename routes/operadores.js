@@ -1,23 +1,34 @@
+// Importa Express
 const express = require('express');
 const router = express.Router();
-const conexion = require('../config/conexion');
 
-router.get('/:codigo', (req, res) => {
-  const codigo = req.params.codigo;
+// Importa el controlador centralizado de operadores
+const operadorController = require('../controllers/operadorController');
 
-  const query = 'SELECT * FROM operadores WHERE codigo = ?';
-  conexion.query(query, [codigo], (error, results) => {
-    if (error) {
-      console.error('Error consultando operador:', error);
-      return res.status(500).json({ error: 'Error interno del servidor' });
-    }
+// Importa middlewares de autenticación y control de roles
+const middlewareCheckRole = require('../middlewares/checkRole');
+const middlewareAuth = require('../middlewares/auth');
 
-    if (results.length === 0) {
-      return res.status(404).json({ error: 'Operador no encontrado' });
-    }
+// Aplica el middleware de autenticación a todas las rutas de este archivo
+router.use(middlewareAuth);
 
-    res.json(results[0]); // Envía solo un operador
-  });
-});
+// Aplica el middleware de roles: solo 'admin' puede usar estas rutas
+router.use(middlewareCheckRole(['admin']));
 
+// GET /operadores
+router.get('/', operadorController.getAll);
+
+// GET /operadores/:codigo
+router.get('/:codigo', operadorController.getByCodigo);
+
+// POST /operadores
+router.post('/', operadorController.create);
+
+// PUT /operadores/:codigo
+router.put('/:codigo', operadorController.update);
+
+// DELETE /operadores/:codigo
+router.delete('/:codigo', operadorController.delete);
+
+// Exporta el router para que se pueda usar en app.js o index.js
 module.exports = router;
