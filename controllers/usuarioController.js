@@ -7,40 +7,6 @@
 const conexion = require('../config/conexion');
 const bcrypt = require('bcrypt');
 
-/**
- * Registrar un nuevo usuario
- * POST /registro
- */
-exports.registro = async (req, res) => {
-  const { nombre, email, password } = req.body;
-  if (!nombre || !email || !password) {
-    return res.status(400).json({ mensaje: 'Faltan datos: nombre, email y password son obligatorios.' });
-  }
-  try {
-    const checkQuery = 'SELECT id FROM usuarios WHERE email = ? LIMIT 1';
-    conexion.query(checkQuery, [email], async (err, results) => {
-      if (err) {
-        console.error('[Registro] Error al verificar usuario:', err);
-        return res.status(500).json({ mensaje: 'No se pudo verificar el usuario. Intenta más tarde.' });
-      }
-      if (results.length > 0) {
-        return res.status(400).json({ mensaje: `El correo ${email} ya está registrado.` });
-      }
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const insertQuery = 'INSERT INTO usuarios (nombre, email, password) VALUES (?, ?, ?)';
-      conexion.query(insertQuery, [nombre, email, hashedPassword], (insertErr) => {
-        if (insertErr) {
-          console.error('[Registro] Error al insertar en MySQL:', insertErr);
-          return res.status(500).json({ mensaje: 'No se pudo registrar el usuario. Intenta más tarde.' });
-        }
-        res.status(201).json({ mensaje: 'Usuario registrado con éxito' });
-      });
-    });
-  } catch (error) {
-    console.error('[Registro] Error general en registro:', error);
-    res.status(500).json({ mensaje: 'No se pudo registrar el usuario. Intenta más tarde.' });
-  }
-};
 
 /**
  * Listar todos los usuarios
@@ -135,3 +101,5 @@ exports.delete = (req, res) => {
     res.json({ mensaje: 'Usuario eliminado correctamente' });
   });
 };
+
+//

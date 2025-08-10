@@ -7,7 +7,7 @@ const operadorController = require('../controllers/operadorController');
 
 // Importa middlewares de autenticación y control de roles
 const middlewareCheckRole = require('../middlewares/checkRole');
-const middlewareAuth = require('../middlewares/auth');
+const middlewareAuth = require('../middlewares/authMiddleware');
 
 // Aplica el middleware de autenticación a todas las rutas de este archivo
 router.use(middlewareAuth);

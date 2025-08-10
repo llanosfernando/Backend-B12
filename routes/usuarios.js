@@ -14,4 +14,9 @@ router.put('/:id', usuarioController.update);
 // Eliminar un usuario
 router.delete('/:id', usuarioController.delete);
 
+// Registrar un nuevo usuario
+//router.post('/', usuarioController.registro);
+
 module.exports = router;
+
+

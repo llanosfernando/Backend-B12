@@ -3,15 +3,19 @@ const express = require('express');// Importamos express
 const cors = require('cors');// Permite que el frontend se conecte
 const app = express(); // Inicializamos express
 const conexion = require('./config/conexion');// Configuración de conexión a MySQL
-const login = require('./routes/login');  // Ruta de login
 const operadorRoutes = require('./routes/operadores');// Rutas de operadores
-const rutaRegistro = require('./routes/registro');  // Ruta de registro
+const usuariosRoutes = require('./routes/usuarios');  // Ruta de usuarios
+const authRoutes = require('./routes/auth'); // Ruta de autenticación
+
+
+
 
 app.use(cors());  // permite que el frontend se conecte
 app.use(express.json());   // permite recibir JSON
-app.use('/', login); // Aquí montamos la ruta del login
+app.use('/auth', authRoutes); // Aquí montamos la ruta de autenticación
 app.use('/operadores', operadorRoutes); // Aquí montamos la ruta del operador
-app.use('/registro', rutaRegistro); // Aquí montamos la ruta de registro
+app.use('/usuarios', usuariosRoutes); // Aquí montamos la ruta de usuarios
+
 
 // Conexión a MySQL
 conexion.connect((error) => {

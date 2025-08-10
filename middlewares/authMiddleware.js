@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken'); // Middleware de autenticación renombrado
 
 module.exports = (req, res, next) => {
   const token = req.headers['authorization']?.split(' ')[1]; // "Bearer token"
