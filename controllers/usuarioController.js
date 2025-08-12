@@ -1,5 +1,3 @@
-
-
 /**
  * Controlador para usuarios
  * Maneja la creación, consulta, edición y eliminación de usuarios.
@@ -13,7 +11,7 @@ const bcrypt = require('bcrypt');
  * GET /usuarios
  */
 exports.getAll = (req, res) => {
-  const query = 'SELECT id, nombre, email FROM usuarios';
+  const query = 'SELECT id, nombre, email, rol FROM usuarios';
   conexion.query(query, (error, results) => {
     if (error) {
       console.error('[Usuarios] Error consultando usuarios:', error);
@@ -29,7 +27,7 @@ exports.getAll = (req, res) => {
  */
 exports.getById = (req, res) => {
   const id = req.params.id;
-  const query = 'SELECT id, nombre, email FROM usuarios WHERE id = ?';
+  const query = 'SELECT id, nombre, email, rol FROM usuarios WHERE id = ?';
   conexion.query(query, [id], (error, results) => {
     if (error) {
       console.error(`[Usuarios] Error consultando usuario (${id}):`, error);
@@ -48,13 +46,30 @@ exports.getById = (req, res) => {
  */
 exports.update = (req, res) => {
   const id = req.params.id;
-  const { nombre, email, password } = req.body;
-  let query, params;
+  const { nombre, email, password, rol } = req.body;
+  let fields = [];
+  let params = [];
+
+  if (nombre) {
+    fields.push('nombre = ?');
+    params.push(nombre);
+  }
+  if (email) {
+    fields.push('email = ?');
+    params.push(email);
+  }
+  if (rol !== undefined) {
+    fields.push('rol = ?');
+    params.push(rol);
+  }
+
   if (password) {
-    // Si se envía password, se encripta
+    // Si se envía password, se encripta y actualiza
     bcrypt.hash(password, 10).then(hashedPassword => {
-      query = 'UPDATE usuarios SET nombre = ?, email = ?, password = ? WHERE id = ?';
-      params = [nombre, email, hashedPassword, id];
+      fields.push('password = ?');
+      params.push(hashedPassword);
+      const query = `UPDATE usuarios SET ${fields.join(', ')} WHERE id = ?`;
+      params.push(id);
       conexion.query(query, params, (error, result) => {
         if (error) {
           console.error(`[Usuarios] Error actualizando usuario (${id}):`, error);
@@ -67,9 +82,9 @@ exports.update = (req, res) => {
       });
     });
   } else {
-    // Si no se envía password, solo actualiza nombre y email
-    query = 'UPDATE usuarios SET nombre = ?, email = ? WHERE id = ?';
-    params = [nombre, email, id];
+    // Si no se envía password, solo actualiza los campos enviados
+    const query = `UPDATE usuarios SET ${fields.join(', ')} WHERE id = ?`;
+    params.push(id);
     conexion.query(query, params, (error, result) => {
       if (error) {
         console.error(`[Usuarios] Error actualizando usuario (${id}):`, error);
@@ -102,4 +117,27 @@ exports.delete = (req, res) => {
   });
 };
 
-//
+/**
+ * Registrar un nuevo usuario
+ * POST /usuarios
+ */
+exports.registro = (req, res) => {
+  const { nombre, email, password, rol } = req.body;
+
+  if (!nombre || !email || !password || !rol) {
+    return res.status(400).json({ error: 'Todos los campos son obligatorios: nombre, email, password, rol.' });
+  }
+
+  bcrypt.hash(password, 10).then(hashedPassword => {
+    const query = 'INSERT INTO usuarios (nombre, email, password, rol) VALUES (?, ?, ?, ?)';
+    const params = [nombre, email, hashedPassword, rol];
+
+    conexion.query(query, params, (error, result) => {
+      if (error) {
+        console.error('[Usuarios] Error registrando usuario:', error);
+        return res.status(500).json({ error: 'No se pudo registrar el usuario. Intenta más tarde.' });
+      }
+      res.status(201).json({ mensaje: 'Usuario registrado correctamente', id: result.insertId });
+    });
+  });
+};

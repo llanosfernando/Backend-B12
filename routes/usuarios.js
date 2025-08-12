@@ -15,7 +15,7 @@ router.put('/:id', usuarioController.update);
 router.delete('/:id', usuarioController.delete);
 
 // Registrar un nuevo usuario
-//router.post('/', usuarioController.registro);
+router.post('/', usuarioController.registro);
 
 module.exports = router;
 
